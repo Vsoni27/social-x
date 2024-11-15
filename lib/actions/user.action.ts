@@ -12,7 +12,7 @@ interface Props {
   onboarded: Boolean;
 }
 
-export async function fetchUserById(userId: string){
+export async function fetchUserById(userId: string){ // userId -> mongodb object id
   try {
     connectToDB();
 
@@ -23,7 +23,7 @@ export async function fetchUserById(userId: string){
   }
 }
 
-export async function fetchUserDetails(id: string | null) {
+export async function fetchUserDetails(id: string | null) { // id -> provided by clerk
   try {
     connectToDB();
 

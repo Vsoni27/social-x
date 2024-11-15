@@ -1,24 +1,42 @@
 import ThreadCard from "@/components/Cards/ThreadCard";
 import { fetchThread } from "@/lib/actions/thread.action";
-import { fetchUserById } from "@/lib/actions/user.action";
-import { ThreadDataType } from "@/lib/types";
+import { fetchUserById, fetchUserDetails } from "@/lib/actions/user.action";
+import { ThreadDataType, UserDataType } from "@/lib/types";
+import { currentUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 export default async function Home() {
   const threads: ThreadDataType[] = await fetchThread(null);
 
-  const threadWithAuthorInfo = await Promise.all(
-    threads.map(async (item) => {
-      const authorData = await fetchUserById(item.author);
+  const authorIds = [...new Set(threads.map((item) => item.author))];
 
-      return { threadData: item, authorData: authorData };
+  const authorDataMap = await Promise.all(
+    authorIds.map(async (id) => {
+      const authorData = await fetchUserById(id);
+      return { id, data: authorData };
     })
-  );
+  ).then((results) => {
+    return results.reduce((acc, { id, data }) => {
+      acc[id] = data;
+      return acc;
+    }, {} as Record<string, any>);
+  });
 
-  console.log(threads);
+  const threadWithAuthorInfo = threads.map((item) => ({
+    threadData: item,
+    authorData: authorDataMap[item.author],
+  }));
+
   return (
     <main className="w-full flex justify-center items-center">
       <div className="flex flex-col items-center gap-y-4 p-4 md:p-0 mt-0 w-full max-h-[85%] overflow-y-auto rounded-lg">
-        {threadWithAuthorInfo.map((item) => <ThreadCard key = {item.threadData._id} authorData = {item.authorData} threadData = {item.threadData}/>)}
+        {threadWithAuthorInfo.map((item) => (
+          <ThreadCard
+            key={item.threadData._id}
+            authorData={item.authorData}
+            threadData={item.threadData}
+          />
+        ))}
       </div>
     </main>
   );

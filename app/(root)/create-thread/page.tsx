@@ -7,7 +7,7 @@ export default async function CreateThread() {
   if (!user) return null;
 
   const userDetails = await fetchUserDetails(user.id);
-  if (!userDetails._id) return null;
+  if (!userDetails?._id) return null;
 
   return (
     <main className="w-full flex justify-center items-center">
