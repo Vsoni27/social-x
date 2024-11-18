@@ -22,7 +22,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useState } from "react";
 import { MdDeleteOutline } from "react-icons/md";
-import { createUpdateUser, followUser } from "@/lib/actions/user.action";
+import { createUpdateUser} from "@/lib/actions/user.action";
 import mongoose from "mongoose";
 import { usePathname, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";

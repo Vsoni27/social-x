@@ -12,7 +12,8 @@ interface Props {
   onboarded: Boolean;
 }
 
-export async function fetchUserById(userId: string){ // userId -> mongodb object id
+export async function fetchUserById(userId: string) {
+  // userId -> mongodb object id
   try {
     await connectToDB();
 
@@ -23,7 +24,8 @@ export async function fetchUserById(userId: string){ // userId -> mongodb object
   }
 }
 
-export async function fetchUserDetails(id: string | null) { // id -> provided by clerk
+export async function fetchUserDetails(id: string | null) {
+  // id -> provided by clerk
   try {
     await connectToDB();
 
@@ -42,7 +44,7 @@ export async function fetchUserDetails(id: string | null) { // id -> provided by
 export async function createUpdateUser(data: Props) {
   try {
     await connectToDB();
-    
+
     await User.findOneAndUpdate({ id: data.id }, data, { upsert: true });
     // console.log("User on MongoDb: ", user);
   } catch (error: any) {
@@ -50,60 +52,40 @@ export async function createUpdateUser(data: Props) {
   }
 }
 
-export async function followUser(
+export async function toggleFollow(
   followingUserId: string,
-  followedUserId: string
+  followedUserId: string,
+  follow: boolean
 ) {
-  await connectToDB();
-
-  let fromUser = null,
-    toUser = null;
-
   try {
-    fromUser = await User.findOne({ _id: followingUserId });
-    toUser = await User.findOne({ _id: followedUserId });
-  } catch (error: any) {
-    throw new Error(error.message);
-  }
+    await connectToDB();
 
-  if (!fromUser) {
-    console.log(`UserID: ${followingUserId} invalid!!`);
-    return;
-  }
-  if (!toUser) {
-    console.log(`UserID: ${followedUserId} invalid!!`);
-    return;
-  }
-
-  console.log(fromUser, toUser);
-
-  try {
-    const isFollowing = fromUser.following.includes(followedUserId);
-
-    if (isFollowing) {
-      // delete followedUserId from following array of fromUser(followingUserId)
-      await User.findOneAndUpdate(
-        { _id: followingUserId },
-        { $pull: { following: followedUserId } }
+    if (follow) {
+      // follow the user
+      await User.findByIdAndUpdate(
+        followingUserId,
+        { $push: { following: followedUserId } },
+        { new: true }
       );
-      // delete followingUserId from followedBy array of toUser(followedUserId)
-      await User.findOneAndUpdate(
-        { _id: followedUserId },
-        { $pull: { followedBy: followingUserId } }
+
+      await User.findByIdAndUpdate(
+        followedUserId,
+        { $push: { followedBy: followingUserId } },
+        { new: true }
       );
-      console.log(`${followingUserId} now unfollows ${followedUserId}`);
+
+      console.log(`${followingUserId} follows ${followedUserId}`);
     } else {
-      // add followedUserId in following array of fromUser(followingUserId)
-      await User.findOneAndUpdate(
-        { _id: followingUserId },
-        { $addToSet: { following: followedUserId } }
-      );
-      // add followingUserId in followedBy array of toUser(followedUserId)
-      await User.findOneAndUpdate(
-        { _id: followedUserId },
-        { $addToSet: { followedBy: followingUserId } }
-      );
-      console.log(`${followingUserId} now follows ${followedUserId}`);
+      // unfollow the user
+      await User.findByIdAndUpdate(followingUserId, {
+        $pull: { following: followedUserId },
+      });
+
+      await User.findByIdAndUpdate(followedUserId, {
+        $pull: { followedBy: followingUserId },
+      });
+
+      console.log(`${followingUserId} unfollows ${followedUserId}`);
     }
   } catch (error: any) {
     throw new Error(error.message);

@@ -101,32 +101,28 @@ export async function toggleLike(
 
     if (liked) {
       // like the thread
-      const updatedThread = await Thread.findByIdAndUpdate(
+      await Thread.findByIdAndUpdate(
         threadId,
         { $push: { likedBy: userId } },
         { new: true }
       );
-      console.log("UpdatedThread: ", updatedThread);
 
-      const updatedUser = await User.findByIdAndUpdate(
+      await User.findByIdAndUpdate(
         userId,
         { $push: { likedThread: threadId } },
         { new: true }
       );
-      console.log("UpdatedUser: ", updatedUser);
 
       console.log(`${threadId} liked by ${userId}`);
     } else {
       // dislike the thread
-      const updatedThread = await Thread.findByIdAndUpdate(threadId, {
+      await Thread.findByIdAndUpdate(threadId, {
         $pull: { likedBy: userId },
       });
-      console.log("UpdatedThread: ", updatedThread);
 
-      const updatedUser = await User.findByIdAndUpdate(userId, {
+      await User.findByIdAndUpdate(userId, {
         $pull: { likedThread: threadId },
       });
-      console.log("UpdatedUser: ", updatedUser);
 
       console.log(`${threadId} disliked by ${userId}`);
     }
