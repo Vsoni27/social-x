@@ -14,7 +14,7 @@ interface Props {
 
 export async function fetchUserById(userId: string){ // userId -> mongodb object id
   try {
-    connectToDB();
+    await connectToDB();
 
     const user = await User.findById(userId);
     return user;
@@ -25,7 +25,7 @@ export async function fetchUserById(userId: string){ // userId -> mongodb object
 
 export async function fetchUserDetails(id: string | null) { // id -> provided by clerk
   try {
-    connectToDB();
+    await connectToDB();
 
     if (!id) {
       const user = await User.find({});
@@ -41,7 +41,7 @@ export async function fetchUserDetails(id: string | null) { // id -> provided by
 
 export async function createUpdateUser(data: Props) {
   try {
-    connectToDB();
+    await connectToDB();
     
     await User.findOneAndUpdate({ id: data.id }, data, { upsert: true });
     // console.log("User on MongoDb: ", user);
@@ -54,7 +54,7 @@ export async function followUser(
   followingUserId: string,
   followedUserId: string
 ) {
-  connectToDB();
+  await connectToDB();
 
   let fromUser = null,
     toUser = null;

@@ -6,6 +6,10 @@ import { currentUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
 export default async function Home() {
+  const user = await currentUser();
+
+  const userInfo: UserDataType = await fetchUserDetails(user!.id);
+
   const threads: ThreadDataType[] = await fetchThread(null);
 
   const authorIds = [...new Set(threads.map((item) => item.author))];
@@ -35,6 +39,7 @@ export default async function Home() {
             key={item.threadData._id}
             authorData={item.authorData}
             threadData={item.threadData}
+            userId={userInfo._id}
           />
         ))}
       </div>

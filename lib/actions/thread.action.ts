@@ -15,7 +15,7 @@ interface Props {
 
 export async function createThread(data: Props) {
   try {
-    connectToDB();
+    await connectToDB();
 
     const createdThread = await Thread.create({
       description: data.text,
@@ -43,12 +43,12 @@ export async function createThread(data: Props) {
 
 export async function fetchThread(threadId: string | null) {
   try {
-    connectToDB();
+    await connectToDB();
 
-    if(!threadId){
+    if (!threadId) {
       const threads = await Thread.find({});
       return threads;
-    }else{
+    } else {
       const thread = await Thread.findById(threadId);
       return thread;
     }
@@ -69,7 +69,7 @@ export async function commentToThread({
   path: string;
 }) {
   try {
-    connectToDB();
+    await connectToDB();
 
     const commentData = {
       text: text,
@@ -91,31 +91,45 @@ export async function commentToThread({
   }
 }
 
-export async function likeThread({
-  userId,
-  threadId,
-}: {
-  userId: string;
-  threadId: string;
-}) {
+export async function toggleLike(
+  userId: string,
+  threadId: string,
+  liked: boolean
+) {
   try {
-    connectToDB();
+    await connectToDB();
 
-    const updatedThread = await Thread.findByIdAndUpdate(
-      threadId,
-      { $push: { likedBy: userId } },
-      { new: true }
-    );
-    console.log("UpdatedThread: ", updatedThread);
+    if (liked) {
+      // like the thread
+      const updatedThread = await Thread.findByIdAndUpdate(
+        threadId,
+        { $push: { likedBy: userId } },
+        { new: true }
+      );
+      console.log("UpdatedThread: ", updatedThread);
 
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { $push: { likedThread: threadId } },
-      { new: true }
-    );
-    console.log("UpdatedUser: ", updatedThread);
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { $push: { likedThread: threadId } },
+        { new: true }
+      );
+      console.log("UpdatedUser: ", updatedUser);
 
-    console.log(`${threadId} liked by ${userId}`);
+      console.log(`${threadId} liked by ${userId}`);
+    } else {
+      // dislike the thread
+      const updatedThread = await Thread.findByIdAndUpdate(threadId, {
+        $pull: { likedBy: userId },
+      });
+      console.log("UpdatedThread: ", updatedThread);
+
+      const updatedUser = await User.findByIdAndUpdate(userId, {
+        $pull: { likedThread: threadId },
+      });
+      console.log("UpdatedUser: ", updatedUser);
+
+      console.log(`${threadId} disliked by ${userId}`);
+    }
   } catch (error: any) {
     throw new Error(error.message);
   }

@@ -14,10 +14,33 @@ import { FaRegHeart } from "react-icons/fa6";
 import { toHumanString } from "human-readable-numbers";
 import { useState } from "react";
 import { ThreadDataType, UserDataType } from "@/lib/types";
+import { toggleLike } from "@/lib/actions/thread.action";
 
+export default function ThreadCard({
+  threadData,
+  authorData,
+  userId,
+}: {
+  threadData: ThreadDataType;
+  authorData: UserDataType;
+  userId: string;
+}) {
+  const [liked, setLiked] = useState<boolean>(
+    threadData.likedBy.includes(userId)
+  );
 
-export default function ThreadCard({threadData, authorData}: {threadData: ThreadDataType, authorData: UserDataType}) {
-  const [Liked, setLiked] = useState<boolean>(false);
+  const [likes, setLikes] = useState<number>(threadData.likedBy.length);
+
+  async function handleLike() {
+    try {
+      const newLike = !liked;
+      setLiked(newLike);
+      setLikes((prevLikes) => (newLike ? prevLikes + 1 : prevLikes - 1));
+      await toggleLike(userId, threadData._id, newLike);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <Card className="md:w-2/3 bg-[#15171B] text-white border-0 flex flex-col justify-between">
@@ -38,30 +61,28 @@ export default function ThreadCard({threadData, authorData}: {threadData: Thread
           </div>
           <div className="flex flex-col p-2">
             <h1 className="text-sm font-semibold">{authorData.username}</h1>
-            <p className="text-xs text-gray-500">2023-05-09</p>
+            <p className="text-xs font-semibold text-gray-500">
+              {new Date(threadData.createdAt).toLocaleString("en-GB")}
+            </p>
           </div>
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-y-4">
-        <p className="text-gray-300 text-sm">
-          {threadData.description}
-        </p>
+        <p className="text-gray-300 text-sm">{threadData.description}</p>
       </CardContent>
       <CardFooter className="flex items-center gap-x-2">
-        {Liked ? (
+        {liked ? (
           <FaHeart
-            onClick={() => setLiked((Liked) => !Liked)}
-            style={{ fill: "#956CD6" }}
+            onClick={handleLike}
+            // style={{ fill: "#956CD6" }}
+            style={{ fill: "#FF0000" }}
             className="cursor-pointer"
           />
         ) : (
-          <FaRegHeart
-            onClick={() => setLiked((Liked) => !Liked)}
-            className="cursor-pointer"
-          />
+          <FaRegHeart onClick={handleLike} className="cursor-pointer" />
         )}
         <p className="text-xs text-gray-300 font-semibold">
-          {toHumanString(3500000)}
+          {toHumanString(likes)}
         </p>
       </CardFooter>
     </Card>
