@@ -84,12 +84,14 @@ export default function ThreadCard({
             </p>
           </div>
         </div>
-        <Button
-          className="bg-violet-700 hover:bg-violet-500 rounded-full font-bold"
-          onClick={handleFollow}
-        >
-          {followed ? "Unfollow" : "Follow"}
-        </Button>
+        {userId !== authorData._id && (
+          <Button
+            className="bg-violet-700 hover:bg-violet-500 rounded-full font-bold"
+            onClick={handleFollow}
+          >
+            {followed ? "Unfollow" : "Follow"}
+          </Button>
+        )}
       </CardHeader>
       <CardContent className="flex flex-col gap-y-4">
         <p className="text-gray-300 text-sm">{threadData.description}</p>

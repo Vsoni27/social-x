@@ -46,7 +46,7 @@ export async function fetchThread(threadId: string | null) {
     await connectToDB();
 
     if (!threadId) {
-      const threads = await Thread.find({});
+      const threads = await Thread.find({}).sort({ createdAt: -1 });
       return threads;
     } else {
       const thread = await Thread.findById(threadId);

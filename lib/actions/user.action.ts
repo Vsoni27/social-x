@@ -58,6 +58,10 @@ export async function toggleFollow(
   follow: boolean
 ) {
   try {
+    if (followingUserId === followedUserId) {
+      throw new Error("Can't follow yourself...");
+    }
+
     await connectToDB();
 
     if (follow) {
