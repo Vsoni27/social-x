@@ -61,7 +61,7 @@ export default function ThreadCard({
   }
 
   return (
-    <Card className="md:w-2/3 bg-[#15171B] text-white border-0 flex flex-col justify-between w-full">
+    <Card className="bg-[#15171B] text-white border-0 flex flex-col justify-between w-full">
       <CardHeader className="flex flex-row items-center justify-between">
         <div className="flex items-center gap-x-2">
           <div

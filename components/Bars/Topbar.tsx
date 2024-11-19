@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 // import logo from "../../public/assets/logo.svg";
 import logo from "@/public/assets/social-media-icons.jpg";
@@ -10,8 +11,9 @@ import {
   SignOutButton,
 } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
+import Link from "next/link";
 
-export default function TopBar() {
+export default function TopBar({ profileUrl }: { profileUrl: string }) {
   return (
     <div className="flex justify-between items-center w-full py-2 px-6 bg-[#15171B]">
       <div className="flex items-center gap-2">
@@ -25,7 +27,7 @@ export default function TopBar() {
             height={85}
             width={85}
             priority={true}
-            style={{ width: "100%", height: "100%", objectFit: "cover"}}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
         </div>
         <h1 className="font-extrabold text-lg">SocialX</h1>
@@ -46,14 +48,20 @@ export default function TopBar() {
           </SignedIn>
         </div>
 
-        <OrganizationSwitcher
-          appearance={{
-            baseTheme: dark,
-            elements: {
-              organizationSwitcherTrigger: "py-2 px-4",
-            },
-          }}
-        />
+        <Link
+          className="rounded-full overflow-hidden ml-2"
+          style={{ width: "40px", height: "40px" }}
+          href="/profile"
+        >
+          <Image
+            src={profileUrl}
+            alt="User Image"
+            height={85}
+            width={85}
+            priority={true}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
+        </Link>
       </div>
     </div>
   );

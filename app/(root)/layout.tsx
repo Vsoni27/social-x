@@ -38,7 +38,7 @@ export default async function RootLayout({
           className={`${inter.className} bg-dark-1 text-white bg-black h-screen`}
         >
           <div className="flex flex-col w-full items-center h-full">
-            <TopBar />
+            <TopBar profileUrl = {userInfo.image}/>
             <div className="flex w-full h-full">
               <LeftSidebar />
               {children}

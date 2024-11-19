@@ -32,8 +32,8 @@ export default async function Home() {
   }));
 
   return (
-    <main className="w-full flex justify-center items-center">
-      <div className="flex flex-col items-center gap-y-4 p-4 md:p-0 mt-0 w-full max-h-[85%] overflow-y-auto rounded-lg">
+    <main className="w-full flex justify-center items-center h-[91%]">
+      <div className="flex flex-col items-center gap-y-4 p-4 md:p-0 mt-0 w-full md:w-2/3 max-h-[90%] overflow-y-auto rounded-lg">
         {threadWithAuthorInfo.map((item) => (
           <ThreadCard
             key={item.threadData._id}
