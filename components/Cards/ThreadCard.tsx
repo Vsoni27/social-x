@@ -85,12 +85,23 @@ export default function ThreadCard({
           </div>
         </div>
         {userId !== authorData._id && (
-          <Button
-            className="bg-violet-700 hover:bg-violet-500 rounded-full font-bold"
-            onClick={handleFollow}
-          >
-            {followed ? "Unfollow" : "Follow"}
-          </Button>
+          <div className="group">
+            <Button
+              className={`rounded-full font-bold ${
+                followed
+                  ? "bg-violet-700 group-hover:bg-red-600"
+                  : "bg-violet-700 hover:bg-violet-500"
+              }`}
+              onClick={handleFollow}
+            >
+              <span className="group-hover:hidden">
+                {followed ? "Following" : "Follow"}
+              </span>
+              <span className="hidden group-hover:inline">
+                {followed ? "Unfollow" : "Follow"}
+              </span>
+            </Button>
+          </div>
         )}
       </CardHeader>
       <CardContent className="flex flex-col gap-y-4">
